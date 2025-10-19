@@ -1,0 +1,9 @@
+questionary
+faster-whisper
+moviepy
+tqdm
+openai
+python-dotenv
+faster-whisper
+moviepy
+python-dotenv
