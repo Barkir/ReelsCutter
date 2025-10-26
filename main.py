@@ -4,8 +4,7 @@ from select_video import VideoSel
 
 def main():
     video = VideoSel()
-    video.discover_videos()
-    video.display_files()
+    video.select_video()
 
 
 if __name__ == "__main__":

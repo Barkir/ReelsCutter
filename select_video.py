@@ -3,35 +3,36 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.prompt import Prompt, IntPrompt
 from rich.tree import Tree
+import questionary
+import sys
+import os
+
+from typing import List
 
 console = Console()
 
 class VideoSel:
         def __init__(self, video_dir="."):
                 self.video_dir = Path(video_dir)
-                self.formats = {".mp4", ".avi", ".mkv", ".mov"}
+                self.formats = (".mp4", ".avi", ".mkv", ".mov")
                 self.video_files = []
 
-        def discover_videos(self):
-            for fmt in self.formats:
-                    self.video_files.extend(self.video_dir.rglob(f"*{fmt}"))
+        def discover_videos(self, directory: str=".") -> List[str]:
+            for root, _, files in os.walk(directory):
+                 for f in files:
+                        if f.lower().endswith(self.formats):
+                            self.video_files.append(os.path.join(root, f))
 
-            return self.video_files
+        def select_video(self):
+            self.discover_videos()
+            if not self.video_files:
+                print("No videos found.")
+                sys.exit(1)
+            print(self.video_files)
+            choice = questionary.select(
+                "pick a video",
+                choices=self.video_files
+                  ).ask()
+            return choice
 
-        def display_files(self):
-            tree = Tree("[bold magenta]Videos[/bold magenta]")
-            folders = {}
-            for video in self.video_files:
-                folder = str(video.parent.relative_to(self.video_dir))
-                if folder not in folders:
-                      folders[folder] = [video]
-                else:
-                    folders[folder].append(video)
-
-            for folder, videos in sorted(folders.items()):
-                  branch = tree.add(f"[yellow]{folder}[/yellow]")
-                  for video in videos:
-                        branch.add(f"[green]{video.name}[/green]")
-
-            console.print(tree)
 
